@@ -42,6 +42,9 @@ public class SecurityConfig {
                 .requestMatchers("/projects/**").permitAll()
                 .requestMatchers("/bids/project/**").permitAll()
 
+                // WEBSOCKET ENDPOINT (Handshake needs to be public, auth is handled in Interceptor)
+                .requestMatchers("/ws/**").permitAll()
+
                 // CHAT ENDPOINTS
                 .requestMatchers("/chat/project/**").permitAll()  // load messages
                 .requestMatchers("/chat/send").authenticated()     // sending needs login

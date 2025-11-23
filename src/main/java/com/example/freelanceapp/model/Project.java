@@ -1,5 +1,6 @@
 package com.example.freelanceapp.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
@@ -28,18 +29,13 @@ public class Project {
     private Instant createdAt;
 
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore // <--- IMPORTANT: Prevents infinite recursion loop
     private List<Bid> bids;
 
     public Project() {
     }
 
-    public Project(Long id,
-                   String title,
-                   String description,
-                   BigDecimal budget,
-                   User client,
-                   Instant createdAt,
-                   List<Bid> bids) {
+    public Project(Long id, String title, String description, BigDecimal budget, User client, Instant createdAt, List<Bid> bids) {
         this.id = id;
         this.title = title;
         this.description = description;
@@ -112,15 +108,5 @@ public class Project {
 
     public void setBids(List<Bid> bids) {
         this.bids = bids;
-    }
-
-    @Override
-    public String toString() {
-        return "Project{" +
-                "id=" + id +
-                ", title='" + title + '\'' +
-                ", budget=" + budget +
-                ", createdAt=" + createdAt +
-                '}';
     }
 }

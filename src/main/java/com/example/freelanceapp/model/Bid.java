@@ -1,5 +1,6 @@
 package com.example.freelanceapp.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
@@ -20,10 +21,12 @@ public class Bid {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "freelancer_id")
+    @JsonIgnore // Prevent recursion
     private User freelancer;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id")
+    @JsonIgnore // Prevent recursion
     private Project project;
 
     private Instant createdAt;
@@ -31,12 +34,7 @@ public class Bid {
     public Bid() {
     }
 
-    public Bid(Long id,
-               BigDecimal bidAmount,
-               String proposalText,
-               User freelancer,
-               Project project,
-               Instant createdAt) {
+    public Bid(Long id, BigDecimal bidAmount, String proposalText, User freelancer, Project project, Instant createdAt) {
         this.id = id;
         this.bidAmount = bidAmount;
         this.proposalText = proposalText;
@@ -52,63 +50,17 @@ public class Bid {
         }
     }
 
-    // Getters & Setters
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public BigDecimal getBidAmount() {
-        return bidAmount;
-    }
-
-    public void setBidAmount(BigDecimal bidAmount) {
-        this.bidAmount = bidAmount;
-    }
-
-    public String getProposalText() {
-        return proposalText;
-    }
-
-    public void setProposalText(String proposalText) {
-        this.proposalText = proposalText;
-    }
-
-    public User getFreelancer() {
-        return freelancer;
-    }
-
-    public void setFreelancer(User freelancer) {
-        this.freelancer = freelancer;
-    }
-
-    public Project getProject() {
-        return project;
-    }
-
-    public void setProject(Project project) {
-        this.project = project;
-    }
-
-    public Instant getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Instant createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    @Override
-    public String toString() {
-        return "Bid{" +
-                "id=" + id +
-                ", bidAmount=" + bidAmount +
-                ", proposalText='" + proposalText + '\'' +
-                ", createdAt=" + createdAt +
-                '}';
-    }
+    // Getters & Setters (Standard)
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+    public BigDecimal getBidAmount() { return bidAmount; }
+    public void setBidAmount(BigDecimal bidAmount) { this.bidAmount = bidAmount; }
+    public String getProposalText() { return proposalText; }
+    public void setProposalText(String proposalText) { this.proposalText = proposalText; }
+    public User getFreelancer() { return freelancer; }
+    public void setFreelancer(User freelancer) { this.freelancer = freelancer; }
+    public Project getProject() { return project; }
+    public void setProject(Project project) { this.project = project; }
+    public Instant getCreatedAt() { return createdAt; }
+    public void setCreatedAt(Instant createdAt) { this.createdAt = createdAt; }
 }
