@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import api from '../api/axios';
-import { type Project, Role } from '../types';
+import { type Project } from '../types';
 import { useAuth } from '../context/AuthContext';
 import { GlassCard } from '../components/GlassCard';
 import { CreateProjectModal } from '../components/CreateProjectModal';
-import { Plus, DollarSign, User as UserIcon, LogOut, Briefcase, MessageSquare, MessageCircle } from 'lucide-react';
+import { Plus, DollarSign, User as UserIcon, LogOut, Briefcase, MessageSquare, MessageCircle, Github, Twitter, Linkedin } from 'lucide-react';
 
 export default function Dashboard() {
   const { user, logout } = useAuth();
@@ -22,8 +22,6 @@ export default function Dashboard() {
     if (!user) return;
     try {
       setIsLoading(true);
-      // Check for both "CLIENT" and "ROLE_CLIENT"
-      // Cast to string to satisfy TypeScript strict checks
       const isClient = user.role === 'CLIENT' || (user.role as string) === 'ROLE_CLIENT';
       const endpoint = isClient ? '/projects/my' : '/projects';
       
@@ -48,53 +46,54 @@ export default function Dashboard() {
     });
   };
 
-  // ROBUST ROLE CHECKS (Handles "FREELANCER" vs "ROLE_FREELANCER")
-  // We cast to string here as well to prevent "no overlap" TypeScript errors
   const isFreelancer = user?.role === 'FREELANCER' || (user?.role as string) === 'ROLE_FREELANCER';
   const isClient = user?.role === 'CLIENT' || (user?.role as string) === 'ROLE_CLIENT';
 
   return (
-    <div className="min-h-screen pb-20">
-      <nav className="border-b border-white/10 bg-black/20 backdrop-blur-md sticky top-0 z-50">
+    <div className="min-h-screen flex flex-col bg-background text-text">
+      
+      {/* PROFESSIONAL HEADER */}
+      <nav className="border-b border-border bg-white sticky top-0 z-50 shadow-sm">
         <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center font-bold text-white">F</div>
-            <span className="font-bold text-lg tracking-tight text-white">FreelanceX</span>
+            <div className="w-8 h-8 rounded bg-primary flex items-center justify-center font-bold text-white shadow-md">F</div>
+            <span className="font-bold text-xl tracking-tight text-gray-900">FreelanceX</span>
           </div>
           
-          <div className="flex items-center gap-4">
-            <Link to="/chat" className="p-2 hover:bg-white/10 rounded-full text-gray-400 hover:text-white transition-colors relative">
-               <MessageSquare size={20} />
+          <div className="flex items-center gap-6">
+            <Link to="/chat" className="text-gray-500 hover:text-primary transition-colors flex items-center gap-2 text-sm font-medium">
+               <MessageSquare size={18} /> Messages
             </Link>
 
-            <div className="h-6 w-px bg-white/10 mx-2 hidden md:block"></div>
+            <div className="h-6 w-px bg-gray-200 hidden md:block"></div>
 
             <div className="hidden md:flex flex-col items-end">
-              <span className="text-sm font-medium text-white">{user?.fullName}</span>
-              <span className="text-xs text-blue-400">{user?.role}</span>
+              <span className="text-sm font-semibold text-gray-800">{user?.fullName}</span>
+              <span className="text-xs text-primary font-medium">{user?.role}</span>
             </div>
-            <button onClick={logout} className="p-2 hover:bg-white/10 rounded-full transition-colors text-gray-400 hover:text-white">
+            <button onClick={logout} className="p-2 hover:bg-gray-100 rounded-full transition-colors text-gray-500 hover:text-red-500">
               <LogOut size={20} />
             </button>
           </div>
         </div>
       </nav>
 
-      <main className="max-w-6xl mx-auto px-4 py-12">
+      {/* MAIN CONTENT AREA */}
+      <main className="flex-1 max-w-6xl w-full mx-auto px-4 py-12">
         <div className="flex justify-between items-end mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-white">
-              {isClient ? 'My Projects' : 'Explore Work'}
+            <h1 className="text-3xl font-bold text-gray-900">
+              {isClient ? 'My Projects' : 'Explore Opportunities'}
             </h1>
-            <p className="text-gray-400 mt-1">
-              {isClient ? 'Manage your active listings' : 'Find your next big opportunity'}
+            <p className="text-gray-500 mt-2">
+              {isClient ? 'Manage your active listings and view proposals' : 'Find your next big project and apply today'}
             </p>
           </div>
           
           {isClient && (
             <button 
               onClick={() => setIsModalOpen(true)}
-              className="bg-primary hover:bg-blue-600 text-white px-5 py-2.5 rounded-lg flex items-center gap-2 transition-all font-medium shadow-lg shadow-blue-500/20"
+              className="bg-primary hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg flex items-center gap-2 transition-all font-medium shadow-lg shadow-blue-500/20"
             >
               <Plus size={18} /> Post Project
             </button>
@@ -104,41 +103,40 @@ export default function Dashboard() {
         {isLoading ? (
           <div className="text-center py-20 text-gray-500">Loading projects...</div>
         ) : projects.length === 0 ? (
-          <div className="text-center py-20 glass-panel rounded-xl">
-            <Briefcase size={48} className="mx-auto text-gray-600 mb-4" />
-            <h3 className="text-xl font-medium text-gray-300">No Projects Found</h3>
-            <p className="text-gray-500">
-              {isClient ? "You haven't posted any projects yet." : "No active projects available."}
+          <div className="text-center py-20 bg-surface rounded-xl border border-dashed border-gray-300">
+            <Briefcase size={48} className="mx-auto text-gray-300 mb-4" />
+            <h3 className="text-xl font-medium text-gray-600">No Projects Found</h3>
+            <p className="text-gray-400 mt-1">
+              {isClient ? "You haven't posted any projects yet." : "No active projects available at the moment."}
             </p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {projects.map((p, i) => (
-              <GlassCard key={p.id} delay={i * 0.05} className="group cursor-pointer flex flex-col h-full">
+              <GlassCard key={p.id} delay={i * 0.05} className="group cursor-pointer flex flex-col h-full bg-white hover:bg-white">
                  <div className="flex justify-between items-start mb-4">
                   <div className="flex items-center gap-2">
-                    <div className="p-1.5 bg-white/5 rounded-full text-gray-400">
+                    <div className="p-1.5 bg-gray-100 rounded-full text-gray-500">
                       <UserIcon size={16} />
                     </div>
-                    <span className="text-xs font-medium text-gray-400">{p.clientName}</span>
+                    <span className="text-xs font-medium text-gray-500">{p.clientName}</span>
                   </div>
-                  <span className="px-2 py-0.5 rounded-full bg-green-500/10 text-green-400 text-xs border border-green-500/20">Active</span>
+                  <span className="px-2.5 py-0.5 rounded-full bg-green-100 text-green-700 text-xs font-medium border border-green-200">Active</span>
                 </div>
                 
-                <h3 className="text-lg font-semibold mb-2 text-white group-hover:text-blue-400 transition-colors">{p.title}</h3>
-                <p className="text-gray-400 text-sm line-clamp-3 mb-6 leading-relaxed flex-1">{p.description}</p>
+                <h3 className="text-lg font-bold mb-2 text-gray-900 group-hover:text-primary transition-colors">{p.title}</h3>
+                <p className="text-gray-600 text-sm line-clamp-3 mb-6 leading-relaxed flex-1">{p.description}</p>
                 
-                <div className="flex items-center justify-between pt-4 border-t border-white/5 mt-auto">
-                  <div className="flex items-center text-white font-medium">
-                    <DollarSign size={16} className="text-gray-500 mr-1" />
+                <div className="flex items-center justify-between pt-4 border-t border-gray-100 mt-auto">
+                  <div className="flex items-center text-gray-900 font-bold">
+                    <DollarSign size={16} className="text-gray-400 mr-1" />
                     {p.budget.toLocaleString()}
                   </div>
 
-                  {/* SEND MESSAGE BUTTON (Only for Freelancers) */}
                   {isFreelancer && (
                     <button 
                       onClick={(e) => handleMessageClick(e, p)}
-                      className="flex items-center gap-2 px-3 py-1.5 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 rounded-lg transition-colors border border-blue-500/20 text-xs font-medium z-10 relative"
+                      className="flex items-center gap-2 px-3 py-1.5 bg-white text-primary rounded-lg transition-colors border border-primary hover:bg-blue-50 text-xs font-medium"
                     >
                       <MessageCircle size={14} />
                       Message Client
@@ -150,6 +148,30 @@ export default function Dashboard() {
           </div>
         )}
       </main>
+
+      {/* PROFESSIONAL FOOTER */}
+      <footer className="bg-white border-t border-border mt-auto">
+        <div className="max-w-6xl mx-auto px-4 py-8">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+            <div className="text-center md:text-left">
+              <span className="font-bold text-gray-900">FreelanceX</span>
+              <p className="text-sm text-gray-500 mt-1">© 2024 FreelanceX Inc. All rights reserved.</p>
+            </div>
+            
+            <div className="flex gap-6 text-sm text-gray-500">
+              <a href="#" className="hover:text-primary transition-colors">Privacy Policy</a>
+              <a href="#" className="hover:text-primary transition-colors">Terms of Service</a>
+              <a href="#" className="hover:text-primary transition-colors">Support</a>
+            </div>
+
+            <div className="flex gap-4">
+              <a href="#" className="text-gray-400 hover:text-gray-600"><Github size={20} /></a>
+              <a href="#" className="text-gray-400 hover:text-blue-400"><Twitter size={20} /></a>
+              <a href="#" className="text-gray-400 hover:text-blue-700"><Linkedin size={20} /></a>
+            </div>
+          </div>
+        </div>
+      </footer>
 
       {isModalOpen && (
         <CreateProjectModal 
